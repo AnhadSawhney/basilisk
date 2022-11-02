@@ -9,7 +9,7 @@ Adafruit_MLX90640 mlx;
 float frame[32*24]; // buffer for full frame of temperatures
 
 #define PANEL_RES_X 64      // Number of pixels wide of each INDIVIDUAL panel module. 
-#define PANEL_RES_Y 32     // Number of pixels tall of each INDIVIDUAL panel module.
+#define PANEL_RES_Y 64     // Number of pixels tall of each INDIVIDUAL panel module.
 #define PANEL_CHAIN 1      // Total number of panels chained one to another
 
 #define PANE_WIDTH PANEL_RES_X * PANEL_CHAIN
@@ -37,13 +37,8 @@ uint16_t time_counter = 0, cycles = 0, fps = 0;
 unsigned long fps_timer;
 
 CRGB currentColor;
-CRGBPalette16 palettes[] = {HeatColors_p, LavaColors_p, RainbowColors_p, RainbowStripeColors_p, CloudColors_p};
-CRGBPalette16 currentPalette = palettes[0];
-
-
-CRGB ColorFromCurrentPalette(uint8_t index = 0, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND) {
-  return ColorFromPalette(currentPalette, index, brightness, blendType);
-}
+//CRGBPalette16 palettes[] = {HeatColors_p, LavaColors_p, RainbowColors_p, RainbowStripeColors_p, CloudColors_p};
+CRGBPalette16 currentPalette = HeatColors_p; //palettes[0];
 
 // uncomment *one* of the below
 //#define PRINT_TEMPERATURES
@@ -93,11 +88,11 @@ void plasma() {
   ++cycles;
   ++fps;
 
-  if (cycles >= 1024) {
+  /*if (cycles >= 1024) {
     time_counter = 0;
     cycles = 0;
     currentPalette = palettes[random(0,sizeof(palettes)/sizeof(palettes[0]))];
-  }
+  }*/
 
   // print FPS rate every 5 seconds
   // Note: this is NOT a matrix refresh rate, it's the number of data frames being drawn to the DMA buffer per second
@@ -145,7 +140,7 @@ void MLX_Setup(TwoWire *w) {
     Serial.println("Interleave");    
   }
 
-  mlx.setResolution(MLX90640_ADC_18BIT);
+  mlx.setResolution(MLX90640_ADC_16BIT);
   Serial.print("Current resolution: ");
   mlx90640_resolution_t res = mlx.getResolution();
   switch (res) {
@@ -155,7 +150,7 @@ void MLX_Setup(TwoWire *w) {
     case MLX90640_ADC_19BIT: Serial.println("19 bit"); break;
   }
 
-  mlx.setRefreshRate(MLX90640_2_HZ);
+  mlx.setRefreshRate(MLX90640_32_HZ);
   Serial.print("Current frame rate: ");
   mlx90640_refreshrate_t rate = mlx.getRefreshRate();
   switch (rate) {
@@ -205,80 +200,97 @@ void print_IR_frame(TwoWire *w) {
   }
   //return 0;
 }
-/*
+
+uint8_t byte_frame[32*24];
+//uint8_t LUT_24_64 = []
+
 void show_IR_on_LEDS(){
   if (mlx.getFrame(frame) != 0) {
     Serial.println("Failed");
-    return;
-  }
-
-  int colorTemp;
-  for (uint8_t h=0; h<24; h++) {
-    for (uint8_t w=0; w<32; w++) {
-      float t = frame[h*32 + w];
-      // Serial.print(t, 1); Serial.print(", ");
-
-      t = min(t, MAXTEMP);
-      t = max(t, MINTEMP); 
-           
-      uint8_t colorIndex = map(t, MINTEMP, MAXTEMP, 0, 255);
-      
-      colorIndex = constrain(colorIndex, 0, 255);
-
-      dma_display->drawPixelRGB888(w, h, currentColor.r, currentColor.g, currentColor.b);
-      //draw the pixels!
-
-                               
+  } else {
+    Serial.println("Success");
+    //int colorTemp;
+    for(int i=0; i<32*24; i++){
+      byte_frame[i] = (uint8_t)map(frame[i], MINTEMP, MAXTEMP, 0, 255);
     }
+
+    /*for (uint8_t h=0; h<24; h++) {
+      for (uint8_t w=0; w<32; w++) {
+        float t = frame[h*32 + w];
+        // Serial.print(t, 1); Serial.print(", ");
+
+        //t = min(t, MAXTEMP);
+        //t = max(t, MINTEMP); 
+            
+        uint8_t colorIndex = map(t, MINTEMP, MAXTEMP, 0, 255);
+        
+        //colorIndex = constrain(colorIndex, 0, 255);
+
+        currentColor = ColorFromPalette(currentPalette, colorIndex);
+
+        dma_display->drawPixelRGB888(w, h, currentColor.r, currentColor.g, currentColor.b);
+        //draw the pixels!           
+      }
+    }*/
+
+    for(uint8_t i=0; i<64; i++){
+      for(uint8_t j=0; j<64; j++){
+        currentColor = ColorFromPalette(currentPalette, byte_frame[(int)(i/2 * 32 + j * 24/64)]);
+        dma_display->drawPixelRGB888(i, j, currentColor.r, currentColor.g, currentColor.b);
+      }
+    }
+    
   }
 }
-*/
 
 TwoWire w = TwoWire(0);
 
 void setup() {
+
     // Module configuration
     HUB75_I2S_CFG mxconfig(
       PANEL_RES_X,   // module width
       PANEL_RES_Y,   // module height
       PANEL_CHAIN,    // Chain length
-      _pins//,
-      //HUB75_I2S_CFG::SHIFTREG
+      _pins
     );
+
+    mxconfig.driver = HUB75_I2S_CFG::SM5266P;
+    //mxconfig.clkphase = 0;
 
     // Display Setup
     dma_display = new MatrixPanel_I2S_DMA(mxconfig);
     dma_display->begin();
-    dma_display->setBrightness8(90); //0-255
-    dma_display->clearScreen();
-    dma_display->fillScreen(0xFF);
+    dma_display->setBrightness8(50); //0-255
+    //dma_display->fillScreen(0xFF);
     dma_display->setLatBlanking(2);
+    dma_display->clearScreen();
 
-    pinMode(LED, OUTPUT);
+    //pinMode(LED, OUTPUT);
 
-    //MLX_Setup();
     //while (!Serial) delay(10);
     Serial.begin(115200);
 
     w = TwoWire(0);
-    w.begin(21, 22);
+    w.begin(21, 22, 800000);
 
     MLX_Setup(&w);
 
     //solid_colors();
 
     // Set current FastLED palette
-    //currentPalette = RainbowColors_p;
-    //Serial.println("Starting plasma effect...");
+    currentPalette = RainbowColors_p;
+    Serial.println("Starting plasma effect...");
     fps_timer = millis();
 }
 
 void loop() {
-  digitalWrite(LED, HIGH); 
-  delay(10);             
-  digitalWrite(LED, LOW);  
-  delay(10);          
-  print_IR_frame(&w);
+  //digitalWrite(LED, HIGH); 
+  //delay(10);             
+  //digitalWrite(LED, LOW);  
+  //delay(10);          
+  //print_IR_frame(&w);
   //plasma();
   //solid_colors();
+  show_IR_on_LEDS();
 }

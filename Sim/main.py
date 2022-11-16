@@ -1,6 +1,7 @@
 import pygame
 import sys
 
+#hello anhad
 # create a 64x64 pygame window
 # record the mouse cursor position and display it onscrewen
 

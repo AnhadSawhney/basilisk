@@ -3222,7 +3222,7 @@
   (symbol (lib_id "Sensor_Optical:A9050") (at 240.03 86.36 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 05dc7fc5-dc6e-4fac-841c-11189469d341)
-    (property "Reference" "R?" (id 0) (at 242.57 85.0899 0)
+    (property "Reference" "R21" (id 0) (at 242.57 85.0899 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "PDV-P8103" (id 1) (at 242.57 87.6299 0)
@@ -3302,7 +3302,7 @@
   (symbol (lib_id "Device:R") (at 240.03 93.98 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid 138762a6-fb1c-40a2-9338-c92b2a79b7d5)
-    (property "Reference" "R?" (id 0) (at 242.57 93.98 90))
+    (property "Reference" "R22" (id 0) (at 242.57 93.98 90))
     (property "Value" "53.6k" (id 1) (at 240.03 93.98 90))
     (property "Footprint" "Resistor_SMD:R_0805_2012Metric" (id 2) (at 238.252 93.98 90)
       (effects (font (size 1.27 1.27)) hide)
@@ -3333,7 +3333,7 @@
   (symbol (lib_id "power:+3.3V") (at 240.03 82.55 0) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid 1a900e92-a8b4-4094-b0db-bd95bb794e53)
-    (property "Reference" "#PWR?" (id 0) (at 240.03 86.36 0)
+    (property "Reference" "#PWR0140" (id 0) (at 240.03 86.36 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (id 1) (at 240.03 78.74 0))
@@ -3545,7 +3545,7 @@
   (symbol (lib_id "power:GND") (at 240.03 97.79 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 4d88429a-b5c5-4cab-b654-3b242198df17)
-    (property "Reference" "#PWR?" (id 0) (at 240.03 104.14 0)
+    (property "Reference" "#PWR0139" (id 0) (at 240.03 104.14 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (id 1) (at 240.03 102.87 0))
@@ -5142,11 +5142,11 @@
     (path "/c4bff5bf-4224-41d3-8aa6-2fd3c25f6de3"
       (reference "#PWR0138") (unit 1) (value "GND") (footprint "")
     )
-    (path "/1a900e92-a8b4-4094-b0db-bd95bb794e53"
-      (reference "#PWR?") (unit 1) (value "+3.3V") (footprint "")
-    )
     (path "/4d88429a-b5c5-4cab-b654-3b242198df17"
-      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
+      (reference "#PWR0139") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/1a900e92-a8b4-4094-b0db-bd95bb794e53"
+      (reference "#PWR0140") (unit 1) (value "+3.3V") (footprint "")
     )
     (path "/7bc39325-dda5-44b6-990c-c832c8ee2028"
       (reference "C1") (unit 1) (value "0.1uf") (footprint "Capacitor_SMD:C_0805_2012Metric")
@@ -5293,10 +5293,10 @@
       (reference "R20") (unit 1) (value "270") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
     (path "/05dc7fc5-dc6e-4fac-841c-11189469d341"
-      (reference "R?") (unit 1) (value "PDV-P8103") (footprint "OptoDevice:R_LDR_5.0x4.1mm_P3mm_Vertical")
+      (reference "R21") (unit 1) (value "PDV-P8103") (footprint "OptoDevice:R_LDR_5.0x4.1mm_P3mm_Vertical")
     )
     (path "/138762a6-fb1c-40a2-9338-c92b2a79b7d5"
-      (reference "R?") (unit 1) (value "53.6k") (footprint "Resistor_SMD:R_0805_2012Metric")
+      (reference "R22") (unit 1) (value "53.6k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
     (path "/e4667d70-2ef7-4de3-b4b9-08b3601d086e"
       (reference "SW1") (unit 1) (value "IO0") (footprint "Button_Switch_SMD:SW_SPST_TL3342")

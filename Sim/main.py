@@ -3,6 +3,14 @@ import sys
 
 # create a 64x64 pygame window
 # record the mouse cursor position and display it onscrewen
+# TODO: 
+# 1. Draw the eyeball (select the image closest to the mouse cursor position)
+# 2. Draw the skin
+# 3. Animate the blinking (choose a random time to weight between blinks and display the frames in sequence)
+# Stretch:
+# 4. Isolate the iris from the eyeball images
+# 5. Draw the iris at the exact correct position
+# 6. Blend between the eyeball backgrounds to get a smooth transition between positions
 
 screen = pygame.display.set_mode((64,64))
 

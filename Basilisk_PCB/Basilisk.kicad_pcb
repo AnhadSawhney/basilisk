@@ -405,7 +405,7 @@
       (net 8 "VBUS") (pinfunction "K") (pintype "passive") (tstamp ac36c86c-ab0f-4979-9a49-b306c905b52f))
     (pad "2" smd roundrect (at 3.4 0 180) (size 3.3 2.5) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.1)
       (net 4 "+5V") (pinfunction "A") (pintype "passive") (tstamp cbf31ed9-0768-4ef5-81d0-06c77f9b5162))
-    (model "${KICAD6_3DMODEL_DIR}/Diode_SMD.3dshapes/D_SMC.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/Diode_SMD.3dshapes/D_SMC.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -501,7 +501,7 @@
       (net 4 "+5V") (pinfunction "VCCB") (pintype "power_in") (tstamp 5a6f5a7f-7b0b-41da-aa72-4d7041165582))
     (pad "20" smd roundrect locked (at 2.8625 -2.925) (size 1.475 0.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 22 "/E.5") (pinfunction "B1") (pintype "bidirectional") (tstamp e149cabe-665b-4034-8531-154987dfd05a))
-    (model "${KICAD6_3DMODEL_DIR}/Package_SO.3dshapes/TSSOP-20_4.4x6.5mm_P0.65mm.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/Package_SO.3dshapes/TSSOP-20_4.4x6.5mm_P0.65mm.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -759,7 +759,7 @@
       (net 4 "+5V") (pinfunction "VCCB") (pintype "power_in") (tstamp 59f98eee-07ec-48e1-a2c7-42c5a8a178cd))
     (pad "20" smd roundrect locked (at 2.8625 -2.925) (size 1.475 0.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 83 "unconnected-(U4-B1-Pad20)") (pinfunction "B1") (pintype "bidirectional+no_connect") (tstamp dd6ff154-bf00-42ff-9e7b-36e7c3426b66))
-    (model "${KICAD6_3DMODEL_DIR}/Package_SO.3dshapes/TSSOP-20_4.4x6.5mm_P0.65mm.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/Package_SO.3dshapes/TSSOP-20_4.4x6.5mm_P0.65mm.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -1146,6 +1146,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
+    (model "${KIPRJMOD}/3D/WE-PDF_1064 (rev1).stp"
+      (offset (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 90))
+    )
   )
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
@@ -1359,8 +1364,8 @@
       (net 13 "Net-(D1-K)") (pinfunction "K") (pintype "passive") (tstamp 10191ff7-5626-46c5-a16e-b8210bf62027))
     (pad "2" thru_hole circle locked (at 2.54 0 180) (size 1.8 1.8) (drill 0.9) (layers "*.Cu" "*.Mask")
       (net 1 "+3.3V") (pinfunction "A") (pintype "passive") (tstamp 5ef7d679-a511-44fd-8de0-620f5f70dbd6))
-    (model "${KICAD6_3DMODEL_DIR}/LED_THT.3dshapes/LED_D5.0mm_Clear.wrl"
-      (offset (xyz 0 0 0))
+    (model "${KICAD6_3DMODEL_DIR}/LED_THT.3dshapes/LED_D5.0mm_Clear.step"
+      (offset (xyz 0 0 -3))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
@@ -1467,6 +1472,11 @@
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
+    )
+    (model "${KIPRJMOD}/3D/USB4085-GF-A.stp"
+      (offset (xyz 15 -4 1.8))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
     )
   )
 
@@ -1586,22 +1596,22 @@
     (attr smd board_only exclude_from_bom)
     (fp_text reference "REF**" (at 0 -2) (layer "F.SilkS") hide
         (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp c3e28a81-2ae8-4b40-abf9-c7ad91b762f3)
+      (tstamp eb0c6233-e18c-46c9-94e5-00347fb0e372)
     )
     (fp_text value "Fiducial_1mm_Mask2mm" (at 0 2) (layer "F.Fab") hide
         (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp 63fc12c8-b591-4fbe-91ca-216db08e8517)
+      (tstamp 4e4c04e5-fb44-487c-8c3f-118c789ddc7f)
     )
     (fp_text user "${REFERENCE}" (at 0 0) (layer "F.Fab") hide
         (effects (font (size 0.4 0.4) (thickness 0.06)))
-      (tstamp 644d5057-2f65-4fb6-8410-f0610b4158c6)
+      (tstamp 3d1becfc-8733-4ec4-aa48-e830d70a524a)
     )
     (fp_circle (center 0 0) (end 1.25 0)
-      (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (tstamp 5a59e830-cb67-4dd4-bb19-3c4c4300b780))
+      (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (tstamp c697cb9f-a2d2-4473-9c6a-fd14abf4daf0))
     (fp_circle (center 0 0) (end 1 0)
-      (stroke (width 0.1) (type solid)) (fill none) (layer "F.Fab") (tstamp 3d748e67-e04d-4a76-9463-5fd4b415b535))
+      (stroke (width 0.1) (type solid)) (fill none) (layer "F.Fab") (tstamp eff1cf8d-82a8-44d7-ac8b-43c22ebb83a3))
     (pad "" smd circle (at 0 0) (size 1 1) (layers "F.Cu" "F.Mask")
-      (solder_mask_margin 0.5) (clearance 0.5) (tstamp d75ca593-eac7-4f39-b64e-93a821a02593))
+      (solder_mask_margin 0.5) (clearance 0.5) (tstamp 3fbf0b18-7112-4a20-884d-aab593a30f0c))
   )
 
   (footprint "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" (layer "F.Cu")
@@ -1669,7 +1679,7 @@
       (net 1 "+3.3V") (pinfunction "~{HOLD}/IO3") (pintype "bidirectional") (tstamp 041df2bf-aa9d-413e-9a9f-e1b79fdf4188))
     (pad "8" smd roundrect (at 2.475 -1.905) (size 1.95 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 1 "+3.3V") (pinfunction "VCC") (pintype "power_in") (tstamp 4fb59480-6b2c-47a0-9d7e-bf0e077f7867))
-    (model "${KICAD6_3DMODEL_DIR}/Package_SO.3dshapes/SOIC-8_3.9x4.9mm_P1.27mm.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/Package_SO.3dshapes/SOIC-8_3.9x4.9mm_P1.27mm.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -1738,22 +1748,22 @@
     (attr smd board_only exclude_from_bom)
     (fp_text reference "REF**" (at 0 -2) (layer "F.SilkS") hide
         (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp c3e28a81-2ae8-4b40-abf9-c7ad91b762f3)
+      (tstamp 596be3d3-5999-48b9-918f-e9a3cb5aebd9)
     )
     (fp_text value "Fiducial_1mm_Mask2mm" (at 0 2) (layer "F.Fab") hide
         (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp 63fc12c8-b591-4fbe-91ca-216db08e8517)
+      (tstamp ebef5ba7-d84d-4df0-8e77-5b4e64faf9f5)
     )
     (fp_text user "${REFERENCE}" (at 0 0) (layer "F.Fab") hide
         (effects (font (size 0.4 0.4) (thickness 0.06)))
-      (tstamp 644d5057-2f65-4fb6-8410-f0610b4158c6)
+      (tstamp d4be9d8a-598d-4684-be08-9bbb1aeaee90)
     )
     (fp_circle (center 0 0) (end 1.25 0)
-      (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (tstamp 5a59e830-cb67-4dd4-bb19-3c4c4300b780))
+      (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (tstamp 0fafef99-e660-43fe-bbce-0c63dfa51820))
     (fp_circle (center 0 0) (end 1 0)
-      (stroke (width 0.1) (type solid)) (fill none) (layer "F.Fab") (tstamp 3d748e67-e04d-4a76-9463-5fd4b415b535))
+      (stroke (width 0.1) (type solid)) (fill none) (layer "F.Fab") (tstamp 190feaf0-57d6-4d03-9fa4-d926636a0ef8))
     (pad "" smd circle (at 0 0) (size 1 1) (layers "F.Cu" "F.Mask")
-      (solder_mask_margin 0.5) (clearance 0.5) (tstamp d75ca593-eac7-4f39-b64e-93a821a02593))
+      (solder_mask_margin 0.5) (clearance 0.5) (tstamp a79bf9c0-a59c-420a-9da6-089464afa89a))
   )
 
   (footprint "Resistor_SMD:R_0805_2012Metric" (layer "F.Cu")
@@ -2142,22 +2152,22 @@
     (attr smd board_only exclude_from_bom)
     (fp_text reference "REF**" (at 0 -2) (layer "F.SilkS") hide
         (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp c3e28a81-2ae8-4b40-abf9-c7ad91b762f3)
+      (tstamp 7598478b-3202-4654-96b8-985ff9428ba4)
     )
     (fp_text value "Fiducial_1mm_Mask2mm" (at 0 2) (layer "F.Fab") hide
         (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp 63fc12c8-b591-4fbe-91ca-216db08e8517)
+      (tstamp f0428817-7433-4536-a67c-29eb44d6e887)
     )
     (fp_text user "${REFERENCE}" (at 0 0) (layer "F.Fab") hide
         (effects (font (size 0.4 0.4) (thickness 0.06)))
-      (tstamp 644d5057-2f65-4fb6-8410-f0610b4158c6)
+      (tstamp bb64914a-1bde-4095-a563-5a1f49ea341f)
     )
     (fp_circle (center 0 0) (end 1.25 0)
-      (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (tstamp 5a59e830-cb67-4dd4-bb19-3c4c4300b780))
+      (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (tstamp e4c83d86-7c6f-41b7-96d0-b7722a43e608))
     (fp_circle (center 0 0) (end 1 0)
-      (stroke (width 0.1) (type solid)) (fill none) (layer "F.Fab") (tstamp 3d748e67-e04d-4a76-9463-5fd4b415b535))
+      (stroke (width 0.1) (type solid)) (fill none) (layer "F.Fab") (tstamp 3beb3198-0827-429a-be2a-108bf48c5a12))
     (pad "" smd circle (at 0 0) (size 1 1) (layers "F.Cu" "F.Mask")
-      (solder_mask_margin 0.5) (clearance 0.5) (tstamp d75ca593-eac7-4f39-b64e-93a821a02593))
+      (solder_mask_margin 0.5) (clearance 0.5) (tstamp d2db941c-f3ec-4085-946e-517e8dfc7026))
   )
 
   (footprint "Package_SO:Texas_R-PDSO-G8_EP2.95x4.9mm_Mask2.4x3.1mm_ThermalVias" (layer "F.Cu")
@@ -2253,6 +2263,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
+    (model ":KICAD7_3DMODEL_DIR:Package_SO.3dshapes/SOIC-8-1EP_3.9x4.9mm_P1.27mm_EP2.35x2.35mm.step"
+      (offset (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (footprint "Package_TO_SOT_SMD:SOT-223-3_TabPin2" (layer "F.Cu")
@@ -2312,7 +2327,7 @@
       (net 1 "+3.3V") (pinfunction "VO") (pintype "power_out") (tstamp 3736658a-14ca-4b4a-9dc2-d3279cb1ac44))
     (pad "3" smd rect (at -3.15 2.3 270) (size 2 1.5) (layers "F.Cu" "F.Paste" "F.Mask")
       (net 8 "VBUS") (pinfunction "VI") (pintype "power_in") (tstamp 4c5de4bc-f9ac-4748-8be3-39f867ab2507))
-    (model "${KICAD6_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-223.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-223.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -2851,6 +2866,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
+    (model "${KIPRJMOD}/3D/DS-210.step"
+      (offset (xyz -13.75 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 -90))
+    )
   )
 
   (footprint "Resistor_SMD:R_0805_2012Metric" (layer "F.Cu")
@@ -2975,7 +2995,7 @@
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp b5aed329-8804-470c-98cf-4d1fa1d105de)
     )
-    (fp_text value "RST" (at 0 -0.15 -90) (layer "B.SilkS")
+    (fp_text value "RST" (at 0 -0.15 90) (layer "B.SilkS")
         (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
       (tstamp 7bf57680-5710-465c-afc8-968f8b71af2a)
     )
@@ -3036,6 +3056,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
+    (model "${KIPRJMOD}/3D/EVQP7-JA-01P.STEP"
+      (offset (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
   )
 
   (footprint "OptoDevice:R_LDR_5.0x4.1mm_P3mm_Vertical" locked (layer "F.Cu")
@@ -3049,7 +3074,7 @@
     (property "ki_keywords" "light dependent photo resistor LDR")
     (path "/05dc7fc5-dc6e-4fac-841c-11189469d341")
     (attr through_hole)
-    (fp_text reference "R4" (at 1.5 -2.9) (layer "F.SilkS") hide
+    (fp_text reference "Ree" (at 1.5 -2.9) (layer "F.SilkS") hide
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp f046df1a-a153-4fde-b9a6-e59d2a85db7a)
     )
@@ -3117,7 +3142,7 @@
       (net 1 "+3.3V") (pintype "passive") (tstamp 11ecc416-5c08-4d4e-9a80-6d4492b68141))
     (pad "2" thru_hole circle locked (at 3 0) (size 1.6 1.6) (drill 0.8) (layers "*.Cu" "*.Mask")
       (net 42 "Net-(U2-IO34)") (pintype "passive") (tstamp 9242be95-614d-4b88-ae30-12e20135bd8b))
-    (model "${KICAD6_3DMODEL_DIR}/OptoDevice.3dshapes/R_LDR_5.0x4.1mm_P3mm_Vertical.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/OptoDevice.3dshapes/R_LDR_5.0x4.1mm_P3mm_Vertical.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -3601,7 +3626,7 @@
       (net 89 "unconnected-(U8-CBUS3-Pad19)") (pinfunction "CBUS3") (pintype "bidirectional+no_connect") (tstamp 7f3fde27-16db-42f0-8caf-106d2d91a445))
     (pad "20" smd rect (at 2.6 -2.8575 270) (size 1.2 0.4) (layers "F.Cu" "F.Paste" "F.Mask")
       (net 77 "/USB>ESP") (pinfunction "TXD") (pintype "output") (tstamp 03f5aeff-8927-4169-90db-608d8772c48b))
-    (model "${KICAD6_3DMODEL_DIR}/Package_SO.3dshapes/SSOP-20_3.9x8.7mm_P0.635mm.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/Package_SO.3dshapes/SSOP-20_3.9x8.7mm_P0.635mm.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -3682,6 +3707,11 @@
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
+    )
+    (model "${KIPRJMOD}/3D/EVQP7-JA-01P.STEP"
+      (offset (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
     )
   )
 
@@ -3772,6 +3802,11 @@
       (net 1 "+3.3V") (pinfunction "VCC") (pintype "power_in") (tstamp 0f103137-7484-4315-bfef-a7a5eb586aec))
     (pad "4" smd roundrect locked (at 1.117436 -2.697728 90) (size 2.41 1.75) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.25)
       (net 1 "+3.3V") (pinfunction "VCC") (pintype "power_in") (tstamp 4fb4375f-35fe-4e68-8650-4c88c110481d))
+    (model "${KIPRJMOD}/3D/MLX90640.STEP"
+      (offset (xyz 0 0 6))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 -112.5))
+    )
   )
 
   (footprint "Package_TO_SOT_SMD:SOT-23" (layer "F.Cu")
@@ -4225,7 +4260,7 @@
         )
       )
     )
-    (model "${KICAD6_3DMODEL_DIR}/RF_Module.3dshapes/ESP32-WROOM-32.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/RF_Module.3dshapes/ESP32-WROOM-32.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -4509,7 +4544,7 @@
       (net 6 "Net-(D3-K)") (pinfunction "K") (pintype "passive") (tstamp 6e37b404-e4f5-4336-9a05-fd624271c830))
     (pad "2" smd roundrect (at 3.4 0 270) (size 3.3 2.5) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.1)
       (net 2 "GND") (pinfunction "A") (pintype "passive") (tstamp 34c3f182-850f-4731-b2ed-74cea346e812))
-    (model "${KICAD6_3DMODEL_DIR}/Diode_SMD.3dshapes/D_SMC.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/Diode_SMD.3dshapes/D_SMC.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -4659,7 +4694,7 @@
       (net 29 "/OE.5") (pinfunction "Pin_15") (pintype "passive") (tstamp 9a1d11d4-24dc-4f58-b676-d39fabeef1e8))
     (pad "16" thru_hole oval locked (at -2.54 17.78) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask")
       (net 2 "GND") (pinfunction "Pin_16") (pintype "passive") (tstamp 6c3797ee-3203-4ce2-8f24-b9b11694acf3))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_2x08_P2.54mm_Vertical.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_2x08_P2.54mm_Vertical.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))

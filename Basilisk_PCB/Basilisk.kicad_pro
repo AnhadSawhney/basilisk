@@ -445,8 +445,8 @@
       "idf": "",
       "netlist": "Basilisk.net",
       "specctra_dsn": "",
-      "step": "",
-      "vrml": ""
+      "step": "Basilisk.step",
+      "vrml": "Basilisk.wrl"
     },
     "page_layout_descr_file": ""
   },

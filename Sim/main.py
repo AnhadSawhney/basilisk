@@ -18,6 +18,7 @@ def main():
     pygame.init()
     pygame.display.set_caption('The All Seeing Eye')
     clock = pygame.time.Clock()
+    #iris_only = pygame.image.load('eyeball/iris_only.png')
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -26,8 +27,9 @@ def main():
             if event.type == pygame.MOUSEBUTTONUP:
                 blink()
         #screen.fill((0,0,0))
-        mouse_pos = pygame.mouse.get_pos()
-        print(mouse_pos)
+        #mouse_pos = pygame.mouse.get_pos()
+        #print(mouse_pos)
+        move_pupil()
         pygame.display.update()
         clock.tick(60)
 
@@ -48,10 +50,13 @@ def load_skin_images():
 def blink():
     #close eye
     skins = load_skin_images()
-    print(len(skins))
+    iris_only = pygame.image.load('eyeball/iris_only.png')
+    pupil = pygame.image.load('eyeball/pupil.png')
     for i in range(0,9):
         #print(i)
         screen.fill((0,0,0))
+        screen.blit(iris_only, (0,0))
+        screen.blit(pupil, (0,0))
         screen.blit(skins[i], (0,0))
         pygame.display.update()
         pygame.time.delay(150)
@@ -59,6 +64,8 @@ def blink():
     for i in range(7, -1, -1):
         #print(i)
         screen.fill((0,0,0))
+        screen.blit(iris_only, (0,0))
+        screen.blit(pupil, (0,0))
         screen.blit(skins[i], (0,0))
         pygame.display.update()
         pygame.time.delay(150)
@@ -67,6 +74,17 @@ def blink():
 def look_at_mouse():
     mouse_pos = pygame.mouse.get_pos()
     #TODO
+
+def move_pupil():
+    #first just placing the pupil
+    iris_only = pygame.image.load('eyeball/iris_only.png')
+    pupil = pygame.image.load('eyeball/pupil.png')
+    skin = pygame.image.load('skin/blinking skin only1.png')
+    mouse_pos = pygame.mouse.get_pos()
+    screen.blit(iris_only, (0,0))
+    screen.blit(pupil, (mouse_pos[0]-32, mouse_pos[1] - 32))
+    screen.blit(skin, (0,0))
+
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,6 @@
 import pygame
 import sys
+from PIL import Image
 
 # create a 64x64 pygame window
 # record the mouse cursor position and display it onscrewen
@@ -25,11 +26,14 @@ def main():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONUP:
-                blink()
+                #blink()
+                get_2d_array()
+                draw_from_array()
         #screen.fill((0,0,0))
         #mouse_pos = pygame.mouse.get_pos()
         #print(mouse_pos)
-        move_pupil()
+        #move_pupil()
+        #get_2d_array()
         pygame.display.update()
         clock.tick(60)
 
@@ -82,9 +86,28 @@ def move_pupil():
     skin = pygame.image.load('skin/blinking skin only1.png')
     mouse_pos = pygame.mouse.get_pos()
     screen.blit(iris_only, (0,0))
-    screen.blit(pupil, (mouse_pos[0]-32, mouse_pos[1] - 32))
+    screen.blit(pupil, (mouse_pos[0] - 32, mouse_pos[1] - 32))
     screen.blit(skin, (0,0))
 
+#takes a loaded png image and turns it into a 2d pixel array
+def get_2d_array():
+    #turn image into pixel array
+    #64x64 image -> one array with 64 arrays with 64 elements each (r,c)
+    #(R,G,B,A)
+    im = Image.open('eyeball/iris_only.png')
+    rgba_im = im.convert("RGBA")
+    pix = rgba_im.load()
+    image_array = list(rgba_im.getdata())
+    array_2d = [[rgba_im.getpixel((i,j)) for j in range(64)] for i in range(64)]
+    return array_2d
+
+def draw_from_array():
+    array_2d = get_2d_array()
+    for i in range(64):
+        for j in range(64):
+            color = array_2d[i][j]
+            screen.set_at((i, j), color)
+            #print("setting")
 
 if __name__ == '__main__':
     main()

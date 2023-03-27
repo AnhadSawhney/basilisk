@@ -1,0 +1,4 @@
+Get correct vertical hole spacing on 3d printed frame pieces
+Add holding tabs on 3d printed pieces
+blend between eye background images
+translate python code into c++

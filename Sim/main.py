@@ -19,7 +19,8 @@ def main():
     pygame.init()
     pygame.display.set_caption('The All Seeing Eye')
     clock = pygame.time.Clock()
-    #iris_only = pygame.image.load('eyeball/iris_only.png')
+    iris_only = Image.open('eyeball/iris_only.png')
+    pupil = Image.open('eyeball/pupil.png')
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -27,8 +28,11 @@ def main():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONUP:
                 #blink()
-                get_2d_array()
-                draw_from_array()
+                draw_from_array(get_2d_array(iris_only))
+                draw_from_array(get_2d_array(pupil))
+                skin = pygame.image.load('skin/blinking skin only1.png')
+                screen.blit(skin, (0,0))
+                print(get_2d_array(pupil))
         #screen.fill((0,0,0))
         #mouse_pos = pygame.mouse.get_pos()
         #print(mouse_pos)
@@ -75,10 +79,6 @@ def blink():
         pygame.time.delay(150)
     screen.fill((0,0,0))
 
-def look_at_mouse():
-    mouse_pos = pygame.mouse.get_pos()
-    #TODO
-
 def move_pupil():
     #first just placing the pupil
     iris_only = pygame.image.load('eyeball/iris_only.png')
@@ -90,24 +90,27 @@ def move_pupil():
     screen.blit(skin, (0,0))
 
 #takes a loaded png image and turns it into a 2d pixel array
-def get_2d_array():
+def get_2d_array(im):
     #turn image into pixel array
     #64x64 image -> one array with 64 arrays with 64 elements each (r,c)
     #(R,G,B,A)
-    im = Image.open('eyeball/iris_only.png')
+    #im = Image.open('eyeball/iris_only.png')
     rgba_im = im.convert("RGBA")
     pix = rgba_im.load()
     image_array = list(rgba_im.getdata())
     array_2d = [[rgba_im.getpixel((i,j)) for j in range(64)] for i in range(64)]
     return array_2d
 
-def draw_from_array():
-    array_2d = get_2d_array()
+#ive a 2d array as input, blits that drawing to the screen
+def draw_from_array(array_2d):
     for i in range(64):
         for j in range(64):
             color = array_2d[i][j]
             screen.set_at((i, j), color)
             #print("setting")
+
+def blend_images():
+    pass
 
 if __name__ == '__main__':
     main()

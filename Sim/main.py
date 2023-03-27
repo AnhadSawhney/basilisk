@@ -1,6 +1,7 @@
 import pygame
 import sys
 from PIL import Image
+import math
 
 # create a 64x64 pygame window
 # record the mouse cursor position and display it onscrewen
@@ -29,22 +30,30 @@ def array_from_image(path):
     rgba_im = im.convert("RGBA")
     pix = rgba_im.load()
     image_array = list(rgba_im.getdata())
-    array_2d = [[rgba_im.getpixel((i,j)) for j in range(64)] for i in range(64)]
-    return array_2d
+    arr = [[rgba_im.getpixel((i,j)) for j in range(64)] for i in range(64)]
+    return arr
 
 skins = []
 for i in range(1,10):
     skins.append(array_from_image('skin/skin'+str(i)+'.png'))
 
+eyeballs = []
+for i in ['N','NE','E','SE','S','SW','W','NW']:
+    eyeballs.append(array_from_image('eyeball/'+i+'_background.png'))
+
+center_eyeball = array_from_image('eyeball/center_background.png')
+
 def composite_array(over, under, alpha):
     for i in range(0,64):
         for j in range(0,64):
-            if over[i][j][3] > 0:
-                under[i][j] = over[i][j]
-            #alpha = over[i][j][3]
+            #if over[i][j][3] > 0:
+            #    under[i][j] = over[i][j]
+            a = over[i][j][3]/255 * alpha/255
             # TODO: element wise multiplication
-            #under[i][j] = under[i][j] * (255-alpha) + over[i][j] * alpha
-
+            under[i][j] = [int(under[i][j][0] * (1-a) + over[i][j][0] * a),
+                            int(under[i][j][1] * (1-a) + over[i][j][1] * a),
+                            int(under[i][j][2] * (1-a) + over[i][j][2] * a),
+                            255]
 #pupil data
 # offset, width
 pupil_data = [
@@ -124,12 +133,25 @@ def render_pupil(pos):
                 continue
             array_2d[x][y] = [0,0,0,255]
 
+# find which octant the mouse is in then blend between the two closest images
+def render_eyeball(pos):
+    # get the angle of the polar form of the mouse cursor with the origin at (32,32)
+    global array_2d
+    angle = math.atan2(pos[1]-32, pos[0]-32)
+    radius = math.sqrt((pos[0]-32)**2 + (pos[1]-32)**2)
+    composite_array(center_eyeball, array_2d, int((1-radius/30)*255))
+    
+
+
 def update_array():
     global blink
     global array_2d
     array_2d = [[[255,255,255,255] for j in range(64)] for i in range(64)]
     pos = pygame.mouse.get_pos()
     pos = (int(pos[0]/pixel_scale), int(pos[1]/pixel_scale))
+
+    render_eyeball(pos)
+
     render_pupil(pos)
 
     if blink == -1:

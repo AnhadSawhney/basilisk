@@ -114,8 +114,8 @@ def render_pupil(pos):
 
         # move the offset if the pupil is close to the edge
         x = int(pos[0])
-        alpha = (x - 32)/1.5
-        offset += alpha*(1-(1-y/32)**2)
+        alpha = (32-x)/2
+        offset += alpha*(1-y/32)**2
 
         width = pupil_data[i][1]
         for j in range(width):

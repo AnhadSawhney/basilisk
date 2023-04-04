@@ -15,6 +15,8 @@ float frame[32*24]; // buffer for full frame of temperatures
 #define PANE_WIDTH PANEL_RES_X * PANEL_CHAIN
 #define PANE_HEIGHT PANEL_RES_Y
 
+#define STATUS_LED 19
+
 #define R1_PIN 25
 #define G1_PIN 26
 #define B1_PIN 27
@@ -22,12 +24,12 @@ float frame[32*24]; // buffer for full frame of temperatures
 #define G2_PIN 12
 #define B2_PIN 13
 #define A_PIN 33
-#define B_PIN 15
+#define B_PIN 5
 #define C_PIN 2
 #define D_PIN 17
 #define E_PIN 32
 #define LAT_PIN 4
-#define OE_PIN 23 //0
+#define OE_PIN 15 //0
 #define CLK_PIN 16
 
 MatrixPanel_I2S_DMA *dma_display = nullptr;
@@ -173,7 +175,7 @@ void MLX_Setup(TwoWire *w) {
 
 }
 
-void print_IR_frame(TwoWire *w) {
+void print_IR_frame() {
   //w.begin(21, 22);
   if (mlx.getFrame(frame) != 0) {
     Serial.println("Failed");
@@ -232,11 +234,33 @@ void show_IR_on_LEDS(){
         //draw the pixels!           
       }
     }*/
-
+    dma_display->fillScreenRGB888(0, 0, 0);
     for(uint8_t i=0; i<64; i++){
-      for(uint8_t j=0; j<64; j++){
-        currentColor = ColorFromPalette(currentPalette, byte_frame[(int)(i/2 * 32 + j * 24/64)]);
-        dma_display->drawPixelRGB888(i, j, currentColor.r, currentColor.g, currentColor.b);
+      for(uint8_t j=0; j<48; j++){
+        //currentColor = ColorFromPalette(currentPalette, byte_frame[(int)(i/2 * 32 + j * 24/64)]);
+        //dma_display->drawPixelRGB888(i, j, currentColor.r, currentColor.g, currentColor.b);
+        int index = (int)(j/2 * 32 + i/2);
+        uint8_t t = byte_frame[index];
+
+        // interpolate
+        if(i%2 == 1) {
+          if(i < 63) {
+            t = (t + byte_frame[index+1])/2;
+          }
+        }
+        if(j%2 == 1) {
+          if(j < 47) {
+            t = (t + byte_frame[index+32])/2;
+          }
+        }
+
+        if(t < 128) {
+          t = t*2;
+          dma_display->drawPixelRGB888(i, j, 0, t, 255-t);
+        } else {
+          t = (t-128)*2;
+          dma_display->drawPixelRGB888(i, j, t, 255-t, 0);
+        }
       }
     }
     
@@ -246,6 +270,7 @@ void show_IR_on_LEDS(){
 TwoWire w = TwoWire(0);
 
 void setup() {
+    pinMode(STATUS_LED, OUTPUT);
 
     // Module configuration
     HUB75_I2S_CFG mxconfig(
@@ -255,7 +280,8 @@ void setup() {
       _pins
     );
 
-    mxconfig.driver = HUB75_I2S_CFG::SM5266P;
+    //mxconfig.driver = HUB75_I2S_CFG::SM5266P;
+    mxconfig.driver = HUB75_I2S_CFG::FM6124;
     //mxconfig.clkphase = 0;
 
     // Display Setup
@@ -273,6 +299,7 @@ void setup() {
 
     w = TwoWire(0);
     w.begin(21, 22, 800000);
+    w.setClock(1000000);
 
     MLX_Setup(&w);
 
@@ -284,6 +311,8 @@ void setup() {
     fps_timer = millis();
 }
 
+bool status = false;
+
 void loop() {
   //digitalWrite(LED, HIGH); 
   //delay(10);             
@@ -293,4 +322,13 @@ void loop() {
   //plasma();
   //solid_colors();
   show_IR_on_LEDS();
+  if(status) {
+    digitalWrite(STATUS_LED, 0);
+    delayMicroseconds(100);
+    digitalWrite(STATUS_LED, 1);
+  } else {
+    digitalWrite(STATUS_LED, 1);
+  }
+  delay(33);
+  status = !status;
 }

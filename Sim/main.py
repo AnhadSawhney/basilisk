@@ -37,11 +37,14 @@ skins = []
 for i in range(1,10):
     skins.append(array_from_image('skin/skin'+str(i)+'.png'))
 
-eyeballs = []
-for i in ['N','NE','E','SE','S','SW','W','NW']:
-    eyeballs.append(array_from_image('eyeball/'+i+'_background.png'))
+#eyeballs = []
+#for i in ['N','NE','E','SE','S','SW','W','NW']:
+#    eyeballs.append(array_from_image('eyeball/'+i+'_background.png'))
 
-center_eyeball = array_from_image('eyeball/center_background.png')
+#center_eyeball = array_from_image('eyeball/center_background.png')
+#eyeball_texture = array_from_image('eyeball/eyeball_full_test.png')
+eyeball_texture = array_from_image('eyeball/eye1.png')
+eyeball_texture_size = len(eyeball_texture)
 
 def composite_array(over, under, alpha):
     for i in range(0,64):
@@ -50,9 +53,9 @@ def composite_array(over, under, alpha):
             #    under[i][j] = over[i][j]
             a = over[i][j][3]/255 * alpha/255
             # TODO: element wise multiplication
-            under[i][j] = [int(under[i][j][0] * (1-a) + over[i][j][0] * a),
-                            int(under[i][j][1] * (1-a) + over[i][j][1] * a),
-                            int(under[i][j][2] * (1-a) + over[i][j][2] * a),
+            under[i][j] = [min(int(under[i][j][0] * (1-a) + over[i][j][0] * a), 255),
+                            min(int(under[i][j][1] * (1-a) + over[i][j][1] * a), 255),
+                            min(int(under[i][j][2] * (1-a) + over[i][j][2] * a), 255),
                             255]
 #pupil data
 # offset, width
@@ -134,13 +137,25 @@ def render_pupil(pos):
             array_2d[x][y] = [0,0,0,255]
 
 # find which octant the mouse is in then blend between the two closest images
-def render_eyeball(pos):
+#def render_eyeball(pos):
     # get the angle of the polar form of the mouse cursor with the origin at (32,32)
-    global array_2d
-    angle = math.atan2(pos[1]-32, pos[0]-32)
-    radius = math.sqrt((pos[0]-32)**2 + (pos[1]-32)**2)
-    composite_array(center_eyeball, array_2d, int((1-radius/30)*255))
+#    global array_2d
+#    angle = math.atan2(pos[1]-32, pos[0]-32)
+#    radius = math.sqrt((pos[0]-32)**2 + (pos[1]-32)**2)
+#    closest_background = eyeballs[int((angle+math.pi)/(math.pi/4))%8]
+#    composite_array(closest_background, array_2d, 255)
+#    composite_array(center_eyeball, array_2d, int((1-radius/30)*255))
     
+def render_eyeball(pos):
+    # pos is x,y goes from 0-64
+    for y in range(0, 64):
+        for x in range(0, 64):
+            sample_y = eyeball_texture_size/2 - pos[1] + 32 + y # stays within the center half
+            sample_x = eyeball_texture_size/2 - pos[0] + 32 + x
+            sample_x = int(min(max(sample_x, 0), eyeball_texture_size-1))
+            sample_y = int(min(max(sample_y, 0), eyeball_texture_size-1))
+            array_2d[x][y] = eyeball_texture[sample_y][sample_x]
+
 
 
 def update_array():
@@ -152,7 +167,7 @@ def update_array():
 
     render_eyeball(pos)
 
-    render_pupil(pos)
+    #render_pupil(pos)
 
     if blink == -1:
         blink = 1

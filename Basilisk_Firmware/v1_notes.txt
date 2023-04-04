@@ -1,0 +1,6 @@
+need 10uF capacitor between EN and GND
+
+all the esp32s must have efuses burned to ignore the pullup resistor that the LED matrix creates on pin 12:
+
+espefuse.py set_flash_voltage 3.3V
+

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
-#define MINTEMP 20.0f
-#define MAXTEMP 35.0f
+#define MINTEMP 18.0f
+#define MAXTEMP 33.0f
 
 const uint16_t camColors[] = {0x480F,
 0x400F,0x400F,0x400F,0x4010,0x3810,0x3810,0x3810,0x3810,0x3010,0x3010,

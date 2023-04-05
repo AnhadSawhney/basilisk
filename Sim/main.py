@@ -28,9 +28,10 @@ def array_from_image(path):
     #(R,G,B,A)
     im = Image.open(path)
     rgba_im = im.convert("RGBA")
-    pix = rgba_im.load()
-    image_array = list(rgba_im.getdata())
-    arr = [[rgba_im.getpixel((i,j)) for j in range(64)] for i in range(64)]
+    #pix = rgba_im.load()
+    #image_array = list(rgba_im.getdata())
+    size = rgba_im.height
+    arr = [[rgba_im.getpixel((i,j)) for j in range(size)] for i in range(size)]
     return arr
 
 skins = []
@@ -43,7 +44,7 @@ for i in range(1,10):
 
 #center_eyeball = array_from_image('eyeball/center_background.png')
 #eyeball_texture = array_from_image('eyeball/eyeball_full_test.png')
-eyeball_texture = array_from_image('eyeball/eye1.png')
+eyeball_texture = array_from_image('eyeball/eyeball_full_test.png')
 eyeball_texture_size = len(eyeball_texture)
 
 def composite_array(over, under, alpha):
@@ -147,16 +148,27 @@ def render_pupil(pos):
 #    composite_array(center_eyeball, array_2d, int((1-radius/30)*255))
     
 def render_eyeball(pos):
+    def constrain(x):
+        return int(min(max(x, 0), eyeball_texture_size-1))
+
+    # center of the displayed image on the eyeball texture
+    center_x = eyeball_texture_size/2 - pos[0] # stays within the center half
+    center_y = eyeball_texture_size/2 - pos[1]
+    K = 0.5 # distortion constant
+
     # pos is x,y goes from 0-64
     for y in range(0, 64):
         for x in range(0, 64):
-            sample_y = eyeball_texture_size/2 - pos[1] + 32 + y # stays within the center half
-            sample_x = eyeball_texture_size/2 - pos[0] + 32 + x
-            sample_x = int(min(max(sample_x, 0), eyeball_texture_size-1))
-            sample_y = int(min(max(sample_y, 0), eyeball_texture_size-1))
-            array_2d[x][y] = eyeball_texture[sample_y][sample_x]
+            sample_x = center_x + x
+            sample_y = center_y + y
 
+            # use pincushion distortion
+            r = math.sqrt((x-pos[0])**2 + (y-pos[1])**2)
+            alpha = K# * (r/32)
+            distorted_x = constrain(sample_x + (x - 32) * alpha * (r/32)**2)
+            distorted_y = constrain(sample_y + (y - 32) * alpha * (r/32)**2)
 
+            array_2d[x][y] = eyeball_texture[distorted_x][distorted_y]
 
 def update_array():
     global blink

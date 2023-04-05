@@ -2,11 +2,9 @@
 #include <ESP32-HUB75-MatrixPanel-I2S-DMA.h>
 #include <Adafruit_MLX90640.h>
 #include <FastLED.h>
-#include "LUT.h"
+#include "images.h"
 #include <Wire.h>
-
-Adafruit_MLX90640 mlx;
-float frame[32*24]; // buffer for full frame of temperatures
+#include "IR.h"
 
 #define PANEL_RES_X 64      // Number of pixels wide of each INDIVIDUAL panel module. 
 #define PANEL_RES_Y 64     // Number of pixels tall of each INDIVIDUAL panel module.
@@ -14,6 +12,8 @@ float frame[32*24]; // buffer for full frame of temperatures
 
 #define PANE_WIDTH PANEL_RES_X * PANEL_CHAIN
 #define PANE_HEIGHT PANEL_RES_Y
+
+/* ================= PINOUT ================= */
 
 #define STATUS_LED 19
 
@@ -29,8 +29,12 @@ float frame[32*24]; // buffer for full frame of temperatures
 #define D_PIN 17
 #define E_PIN 32
 #define LAT_PIN 4
-#define OE_PIN 15 //0
+#define OE_PIN 15 
 #define CLK_PIN 16
+
+/* ========================================== */
+
+#define LOOK_LOWPASS 0.8f // 80% the old value, 20% the new one
 
 MatrixPanel_I2S_DMA *dma_display = nullptr;
 HUB75_I2S_CFG::i2s_pins _pins={R1_PIN, G1_PIN, B1_PIN, R2_PIN, G2_PIN, B2_PIN, A_PIN, B_PIN, C_PIN, D_PIN, E_PIN, LAT_PIN, OE_PIN, CLK_PIN};
@@ -38,236 +42,52 @@ HUB75_I2S_CFG::i2s_pins _pins={R1_PIN, G1_PIN, B1_PIN, R2_PIN, G2_PIN, B2_PIN, A
 uint16_t time_counter = 0, cycles = 0, fps = 0;
 unsigned long fps_timer;
 
-CRGB currentColor;
-//CRGBPalette16 palettes[] = {HeatColors_p, LavaColors_p, RainbowColors_p, RainbowStripeColors_p, CloudColors_p};
-CRGBPalette16 currentPalette = HeatColors_p; //palettes[0];
-
-// uncomment *one* of the below
-//#define PRINT_TEMPERATURES
-#define PRINT_ASCIIART
-
-#define LED 2
-
-const char ascii_LUT[] = " .:-=+*#%@";
-
-void solid_colors() {
-  Serial.println("Fill screen: RED");
-  dma_display->fillScreenRGB888(255, 0, 0);
-  delay(1000);
-
-  Serial.println("Fill screen: GREEN");
-  dma_display->fillScreenRGB888(0, 255, 0);
-  delay(1000);
-
-  Serial.println("Fill screen: BLUE");
-  dma_display->fillScreenRGB888(0, 0, 255);
-  delay(1000);
-
-  Serial.println("Fill screen: Neutral White");
-  dma_display->fillScreenRGB888(64, 64, 64);
-  delay(1000);
-
-  Serial.println("Fill screen: black");
-  dma_display->fillScreenRGB888(0, 0, 0);
-  delay(1000);
-}
-
-void plasma() {
-  for (int x = 0; x < PANE_WIDTH; x++) {
-    for (int y = 0; y <  PANE_HEIGHT; y++) {
-      int16_t v = 0;
-      uint8_t wibble = sin8(time_counter);
-      v += sin16(x * wibble * 3 + time_counter);
-      v += cos16(y * (128 - wibble)  + time_counter);
-      v += sin16(y * x * cos8(-time_counter) / 8);
-
-      currentColor = ColorFromPalette(currentPalette, (v >> 8) + 127); //, brightness, currentBlendType);
-      dma_display->drawPixelRGB888(x, y, currentColor.r, currentColor.g, currentColor.b);
-    }
-  }
-
-  ++time_counter;
-  ++cycles;
-  ++fps;
-
-  /*if (cycles >= 1024) {
-    time_counter = 0;
-    cycles = 0;
-    currentPalette = palettes[random(0,sizeof(palettes)/sizeof(palettes[0]))];
-  }*/
-
-  // print FPS rate every 5 seconds
-  // Note: this is NOT a matrix refresh rate, it's the number of data frames being drawn to the DMA buffer per second
-  if (fps_timer + 5000 < millis()){
-    Serial.printf_P(PSTR("Effect fps: %d\n"), fps/5);
-    fps_timer = millis();
-    fps = 0;
-  }
-}
-
-void MLX_Setup(TwoWire *w) {
-  delay(100);
-
-  Serial.println("Adafruit MLX90640 Simple Test");
-  uint8_t address;
-  bool found = false;
-  for (address = 1; address < 127; address++ ) {
-    if (! mlx.begin(address, w)) {
-      Serial.print("MLX90640 not found! ");
-      Serial.println(address, HEX);
-    } else {
-      Serial.print("Found Adafruit MLX90640 ");
-      Serial.println(address, HEX);
-      found = true;
-      break;
-    }
-  }
-
-  if (!found) {
-    Serial.println("No MLX90640 found, check wiring?");
-    while (1);
-  }
-
-  Serial.print("Serial number: ");
-  Serial.print(mlx.serialNumber[0], HEX);
-  Serial.print(mlx.serialNumber[1], HEX);
-  Serial.println(mlx.serialNumber[2], HEX);
-  
-  //mlx.setMode(MLX90640_INTERLEAVED);
-  mlx.setMode(MLX90640_CHESS);
-  Serial.print("Current mode: ");
-  if (mlx.getMode() == MLX90640_CHESS) {
-    Serial.println("Chess");
-  } else {
-    Serial.println("Interleave");    
-  }
-
-  mlx.setResolution(MLX90640_ADC_16BIT);
-  Serial.print("Current resolution: ");
-  mlx90640_resolution_t res = mlx.getResolution();
-  switch (res) {
-    case MLX90640_ADC_16BIT: Serial.println("16 bit"); break;
-    case MLX90640_ADC_17BIT: Serial.println("17 bit"); break;
-    case MLX90640_ADC_18BIT: Serial.println("18 bit"); break;
-    case MLX90640_ADC_19BIT: Serial.println("19 bit"); break;
-  }
-
-  mlx.setRefreshRate(MLX90640_32_HZ);
-  Serial.print("Current frame rate: ");
-  mlx90640_refreshrate_t rate = mlx.getRefreshRate();
-  switch (rate) {
-    case MLX90640_0_5_HZ: Serial.println("0.5 Hz"); break;
-    case MLX90640_1_HZ: Serial.println("1 Hz"); break; 
-    case MLX90640_2_HZ: Serial.println("2 Hz"); break;
-    case MLX90640_4_HZ: Serial.println("4 Hz"); break;
-    case MLX90640_8_HZ: Serial.println("8 Hz"); break;
-    case MLX90640_16_HZ: Serial.println("16 Hz"); break;
-    case MLX90640_32_HZ: Serial.println("32 Hz"); break;
-    case MLX90640_64_HZ: Serial.println("64 Hz"); break;
-  }
-
-  if (mlx.getFrame(frame) != 0) {
-    Serial.println("Failed");
-    return;
-  } else {
-    Serial.println("Success");
-  }
-
-}
-
-void print_IR_frame() {
-  //w.begin(21, 22);
-  if (mlx.getFrame(frame) != 0) {
-    Serial.println("Failed");
-    return;
-  }
-  
-  Serial.println();
-  Serial.println();
-  for (uint8_t h=0; h<24; h++) {
-    for (uint8_t w=0; w<32; w++) {
-      float t = frame[h*32 + w];
-#ifdef PRINT_TEMPERATURES
-      Serial.print(t, 1);
-      Serial.print(", ");
-#endif
-#ifdef PRINT_ASCIIART
-      uint8_t idx = (uint8_t)map(t, 20, 40, 0, 10);
-      Serial.print(ascii_LUT[idx]);
-      //if(t>21) Serial.print("X");
-      //else Serial.print(" ");
-#endif
-    }
-    Serial.println();
-  }
-  //return 0;
-}
-
-uint8_t byte_frame[32*24];
-//uint8_t LUT_24_64 = []
-
-void show_IR_on_LEDS(){
-  if (mlx.getFrame(frame) != 0) {
-    Serial.println("Failed");
-  } else {
-    Serial.println("Success");
-    //int colorTemp;
-    for(int i=0; i<32*24; i++){
-      byte_frame[i] = (uint8_t)map(frame[i], MINTEMP, MAXTEMP, 0, 255);
-    }
-
-    /*for (uint8_t h=0; h<24; h++) {
-      for (uint8_t w=0; w<32; w++) {
-        float t = frame[h*32 + w];
-        // Serial.print(t, 1); Serial.print(", ");
-
-        //t = min(t, MAXTEMP);
-        //t = max(t, MINTEMP); 
-            
-        uint8_t colorIndex = map(t, MINTEMP, MAXTEMP, 0, 255);
-        
-        //colorIndex = constrain(colorIndex, 0, 255);
-
-        currentColor = ColorFromPalette(currentPalette, colorIndex);
-
-        dma_display->drawPixelRGB888(w, h, currentColor.r, currentColor.g, currentColor.b);
-        //draw the pixels!           
-      }
-    }*/
-    dma_display->fillScreenRGB888(0, 0, 0);
-    for(uint8_t i=0; i<64; i++){
-      for(uint8_t j=0; j<48; j++){
-        //currentColor = ColorFromPalette(currentPalette, byte_frame[(int)(i/2 * 32 + j * 24/64)]);
-        //dma_display->drawPixelRGB888(i, j, currentColor.r, currentColor.g, currentColor.b);
-        int index = (int)(j/2 * 32 + i/2);
-        uint8_t t = byte_frame[index];
-
-        // interpolate
-        if(i%2 == 1) {
-          if(i < 63) {
-            t = (t + byte_frame[index+1])/2;
-          }
-        }
-        if(j%2 == 1) {
-          if(j < 47) {
-            t = (t + byte_frame[index+32])/2;
-          }
-        }
-
-        if(t < 128) {
-          t = t*2;
-          dma_display->drawPixelRGB888(i, j, 0, t, 255-t);
-        } else {
-          t = (t-128)*2;
-          dma_display->drawPixelRGB888(i, j, t, 255-t, 0);
-        }
-      }
-    }
-    
-  }
-}
-
 TwoWire w = TwoWire(0);
+
+int lookx = 0, looky = 0;
+
+void draw_eye(int lookx, int looky) {
+  // start with green
+  //dma_display->fillScreenRGB888(0, 255, 0); // don't refresh the screen it causes flashes because a display refresh happens before the eye is fully finished drawing
+
+  for(int x = 0; x < 64; x++) {
+    for(int y = 0; y < 64; y++) {
+      if( ISMASKED(x,y) ) { // this is masked out in the skin image, its part of the eyeball
+        // TODO: draw the textured eyeball here with the remapping function
+        //continue;
+        dma_display->drawPixelRGB888(x, y, 0, 255, 0); 
+      } else {
+        dma_display->drawPixelRGB888(x, y, skin[x+y*64][0], skin[x+y*64][1], skin[x+y*64][2]);
+      }
+    }
+  }
+}
+
+void draw_pupil(int lookx, int looky) {
+  int pupil_height = 49;
+  for(int i = 0; i < pupil_height; i++) {
+    int y = (int)(looky - pupil_height/2 + i);
+    if(y < 0 || y > 63) {
+      continue;
+    }
+    float offset = pupil_data[i][0];
+    float alpha = (32.0f-lookx)/2.0f; // how strongly to warp
+    offset += alpha*(1.0f-y/32.0f)*(float)(1.0f-y/32.0f);
+
+    int width = pupil_data[i][1];
+    for(int j = 0; j < width; j++) {
+      int x = int(lookx + j + offset);
+      if(x < 0 or x > 63) {
+        continue;
+      }
+      if( ISMASKED(x,y) ) {
+        dma_display->drawPixelRGB888(x,y,0,0,0);
+      }
+    }
+  }
+
+  //dma_display->drawPixelRGB888(lookx, looky, 255, 0, 0); // just for debug, show where the eye should be looking
+}
 
 void setup() {
     pinMode(STATUS_LED, OUTPUT);
@@ -287,12 +107,10 @@ void setup() {
     // Display Setup
     dma_display = new MatrixPanel_I2S_DMA(mxconfig);
     dma_display->begin();
-    dma_display->setBrightness8(50); //0-255
+    dma_display->setBrightness8(75); //0-255
     //dma_display->fillScreen(0xFF);
     dma_display->setLatBlanking(2);
     dma_display->clearScreen();
-
-    //pinMode(LED, OUTPUT);
 
     //while (!Serial) delay(10);
     Serial.begin(115200);
@@ -302,33 +120,28 @@ void setup() {
     w.setClock(1000000);
 
     MLX_Setup(&w);
-
-    //solid_colors();
-
-    // Set current FastLED palette
-    currentPalette = RainbowColors_p;
-    Serial.println("Starting plasma effect...");
     fps_timer = millis();
 }
 
 bool status = false;
 
 void loop() {
-  //digitalWrite(LED, HIGH); 
-  //delay(10);             
-  //digitalWrite(LED, LOW);  
-  //delay(10);          
-  //print_IR_frame(&w);
-  //plasma();
-  //solid_colors();
-  show_IR_on_LEDS();
+  int newx, newy;
+  get_ir(newx, newy);
+
+  lookx = (int)(lookx * LOOK_LOWPASS + newx * (1.0f - LOOK_LOWPASS));
+  looky = (int)(looky * LOOK_LOWPASS + newy * (1.0f - LOOK_LOWPASS));
+
+  draw_eye(lookx, looky);
+  draw_pupil(lookx, looky);
+
   if(status) {
     digitalWrite(STATUS_LED, 0);
-    delayMicroseconds(100);
+    delayMicroseconds(10);
     digitalWrite(STATUS_LED, 1);
   } else {
     digitalWrite(STATUS_LED, 1);
   }
-  delay(33);
+  //delay(33);
   status = !status;
 }

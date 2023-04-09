@@ -5,31 +5,42 @@ from PIL import Image
 
 # Load image
 im = Image.open('skin/skin1.png')
+#im = Image.open('eyeball/eyeball_full_test.png')
 rgba_im = im.convert("RGBA")
 pix = rgba_im.load()
 
 # Get image data
 #image_array = list(rgba_im.getdata())
-arr = [[rgba_im.getpixel((i,j)) for j in range(64)] for i in range(64)]
+size = rgba_im.height
+arr = [[rgba_im.getpixel((i,j)) for j in range(size)] for i in range(size)]
+
 
 def print_image():
-    for i in range(0,64):
-        for j in range(0,64):
+    out = '' 
+    for i in range(0,size):
+        for j in range(0,size):
             #if(arr[i][j][3] == 0):
             #    print('{0,255,0}', end=',')
             #else:
-            print('{'+str(arr[i][j][0])+','+str(arr[i][j][1])+','+str(arr[i][j][2])+'}', end=', ')
+            print('{'+str(arr[j][i][0])+','+str(arr[j][i][1])+','+str(arr[j][i][2])+'}', end=',')
+            out += '{'+str(arr[j][i][0])+','+str(arr[j][i][1])+','+str(arr[j][i][2])+'},'
         print()
+        out += "\n"
+
+    # save out to a file called array.txt
+    f = open("array.txt", "w")
+    f.write(out)
+    f.close()
 
 def print_mask():
-    for i in range(0,64):
+    for i in range(0,size):
         print('0b', end='')
-        for j in range(0,64):
-            if(arr[i][j][3] == 0):
+        for j in range(0,size):
+            if(arr[j][i][3] == 0):
                 print('1', end='')
             else:
                 print('0', end='')
         print(',')
 
-
 print_mask()
+#print_image()

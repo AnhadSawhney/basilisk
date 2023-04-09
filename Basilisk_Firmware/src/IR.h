@@ -55,7 +55,7 @@ void MLX_Setup(TwoWire *w) {
     case MLX90640_ADC_19BIT: Serial.println("19 bit"); break;
   }
 
-  mlx.setRefreshRate(MLX90640_32_HZ);
+  mlx.setRefreshRate(MLX90640_32_HZ); // 64 hz doesnt work
   Serial.print("Current frame rate: ");
   mlx90640_refreshrate_t rate = mlx.getRefreshRate();
   switch (rate) {
@@ -106,34 +106,45 @@ void print_IR_frame() {
   //return 0;
 }
 
-// allocate 100 points for blob sampling
-uint8_t blob_coords_x[100];
-uint8_t blob_coords_y[100];
+#define BLOB_MAX_SIZE 50
 
-void get_ir(int &lookx, int &looky) {
+// allocate 50 points for blob sampling
+uint8_t blob_coords_x[BLOB_MAX_SIZE];
+uint8_t blob_coords_y[BLOB_MAX_SIZE];
+
+float get_ir(int &lookx, int &looky) {
     if (mlx.getFrame(frame) != 0) {
         Serial.println("Get Frame Fail");
-        return; // lookx and looky unchanged
+        return 0; // lookx and looky unchanged
     }
-    float max = 0, min = frame[0];
+    float max = 0, min = frame[0], avg = 0, t;
 
-    for(int t=0; t<32*24; t++) { // grab the max and min
-        if (frame[t] > max) {
-            max = frame[t];
+    for(int i=0; i<32*24; i++) { // grab the max and min
+        t = frame[i];
+        if (t > max) {
+            max = t;
         }
-        if (frame[t] < min) {
-            min = frame[t];
+        if (t < min) {
+            min = t;
         }
+        avg += t;
     }
 
-    if(max-min < 3) { // couldn't find anything hot that stands out
+    avg /= (32.0f*24.0f);
+
+    //Serial.print("Average: "); Serial.print(avg);
+    //Serial.println(" Min: "); Serial.print(min);
+    //Serial.println(" Max: "); Serial.print(max);
+
+    if(avg - min < 3) { // couldn't find anything hot that stands out
         Serial.println("Nothing to look at");
         lookx = 32;
         looky = 32;
-        return;
+        return 100;
     }
 
-    float thresh = max - (max-min) * 0.1f; // cutoff the top 20% of the range
+    float thresh = max - (max-min) * 0.2f; // cutoff the top 20% of the range
+    Serial.print(" Thresh: "); Serial.print(thresh);
 
     int blob_idx = 0;
 
@@ -145,8 +156,11 @@ void get_ir(int &lookx, int &looky) {
                 blob_coords_y[blob_idx] = y;
                 blob_idx++;
             }
+            if(blob_idx >= BLOB_MAX_SIZE) break; // don't overflow the blob array
         }
     }
+
+    Serial.print(" Blob size: "); Serial.print(blob_idx);
 
     uint64_t newx = 0, newy = 0;
 
@@ -156,69 +170,23 @@ void get_ir(int &lookx, int &looky) {
         newy += blob_coords_y[i];
     }
 
-    newx = newx / blob_idx;
-    newy = newy / blob_idx;
+    newx = (int)((float)(newx) / (float)(blob_idx) * 2.0f);
+    newy = (int)((float)(newy) / (float)(blob_idx) * 64.0f/24.0f);
 
-    
-    lookx = int(newx * 2); // map 0-32 to 0-64
-    looky = (int)(newy*64.0f/24.0f); // map 0-24 to 0-64
+    int magx = newx - 32;
+    int magy = newy - 32;
+    uint64_t mag = magx * magx + magy * magy;
 
-    int magx = lookx - 32;
-    int magy = looky - 32;
-
-    if(magx * magx + magy * magx > 25*25) { // if the blob is too far away, don't look at it
+    if(mag > 28*28) { // if the blob is too far away, don't look at it
         Serial.print("Too far: ");
-        return;
+        lookx = (float)(newx * mag) / 28.0f;
+        looky = (float)(newy * mag) / 28.0f;
+    } else {
+        lookx = newx;
+        looky = newy;
     }
 
-    Serial.print("x: "); Serial.print(lookx);
-    Serial.print(" y: "); Serial.println(looky);    
+    Serial.print(" x: "); Serial.print(newx);
+    Serial.print(" y: "); Serial.println(newy);    
+    return thresh;
 }
-
-/*
-void show_IR_on_LEDS(){
-  if (mlx.getFrame(frame) != 0) {
-    Serial.println("Failed");
-  } else {
-    Serial.println("Success");
-    //int colorTemp;
-    uint8_t byte_frame[32*24];
-
-    for(int i=0; i<32*24; i++){
-      byte_frame[i] = (uint8_t)map(frame[i], MINTEMP, MAXTEMP, 0, 255);
-    }
-
-    dma_display->fillScreenRGB888(0, 0, 0);
-    for(uint8_t i=0; i<64; i++){
-      for(uint8_t j=0; j<48; j++){
-        //currentColor = ColorFromPalette(currentPalette, byte_frame[(int)(i/2 * 32 + j * 24/64)]);
-        //dma_display->drawPixelRGB888(i, j, currentColor.r, currentColor.g, currentColor.b);
-        int index = (int)(j/2 * 32 + i/2);
-        uint8_t t = byte_frame[index];
-
-        // interpolate
-        if(i%2 == 1) {
-          if(i < 63) {
-            t = (t + byte_frame[index+1])/2;
-          }
-        }
-        if(j%2 == 1) {
-          if(j < 47) {
-            t = (t + byte_frame[index+32])/2;
-          }
-        }
-
-        if(t < 128) {
-          t = t*2;
-          dma_display->drawPixelRGB888(i, j, 0, t, 255-t);
-        } else {
-          t = (t-128)*2;
-          dma_display->drawPixelRGB888(i, j, t, 255-t, 0);
-        }
-      }
-    }
-    
-  }
-}
-
-*/

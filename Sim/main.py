@@ -154,7 +154,6 @@ def render_eyeball(pos):
     # center of the displayed image on the eyeball texture
     center_x = eyeball_texture_size/2 - pos[0] # stays within the center half
     center_y = eyeball_texture_size/2 - pos[1]
-    K = 0.5 # distortion constant
 
     # pos is x,y goes from 0-64
     for y in range(0, 64):
@@ -163,10 +162,11 @@ def render_eyeball(pos):
             sample_y = center_y + y
 
             # use pincushion distortion
-            r = math.sqrt((x-pos[0])**2 + (y-pos[1])**2)
-            alpha = K# * (r/32)
-            distorted_x = constrain(sample_x + (x - 32) * alpha * (r/32)**2)
-            distorted_y = constrain(sample_y + (y - 32) * alpha * (r/32)**2)
+
+            alpha = (pos[0]-32)/2
+            offset = alpha*(1-y/32)**2
+            distorted_x = constrain(sample_x+offset)
+            distorted_y = constrain(sample_y)
 
             array_2d[x][y] = eyeball_texture[distorted_x][distorted_y]
 
